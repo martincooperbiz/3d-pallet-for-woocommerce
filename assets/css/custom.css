@@ -1,0 +1,18 @@
+#visualize-3d-pallet-root {max-height: 26rem;overflow: hidden;}
+#visualize-3d-pallet-root .w-3\/4.h-full.border-solid.border-2.border-indigo-600{width:100%!important;max-height: 25rem;}
+#visualize-3d-pallet-root .w-1\/4.h-full.flex.flex-col.mr-2.space-y-2{display: none;}
+
+#visualize-3d-pallet-root .h-screen.flex.flex-col .ml-2 a.font-semibold {
+    display: none;
+}
+
+.flex-column {
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+}
+
+#leva__root {
+    display: none;
+}
