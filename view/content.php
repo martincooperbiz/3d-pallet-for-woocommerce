@@ -290,11 +290,13 @@ $order = wc_get_order( $wpPost->ID );
 
     function autoScaleResult() {
         clearInterval(intervalId);
-        autoScaleLoading.style.display = 'none';
         if (results.length) {
             window.lotus.c(window.lotus.Jb(window.lotus.vn.F(results[results.length - 1].lastSend)));
             applyResult(results[results.length - 1].result);
         }
+        setTimeout(()=>{
+            autoScaleLoading.style.display = 'none';
+        }, 100)
         console.info('Last Send:\n', results[results.length - 1].lastSend)
         console.info('Result:')
         console.dir(results)
