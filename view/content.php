@@ -33,10 +33,11 @@ $order = wc_get_order( $wpPost->ID );
         <a class="p-1 w-full bg-violet-500 hover:bg-violet-600 active:bg-violet-700 focus:outline-none focus:ring focus:ring-violet-300 text-white" href="javascript:void(0);" onclick="autoScaleDrawData()">Auto Scale</a>
     </div>
 </div>
+<div id="auto-scale-loading" style='display:none;background-image: url("/wp-includes/js/thickbox/loadingAnimation.gif");height: 26px;background-repeat: no-repeat;background-position: center;' ></div>
 <div id="visualize-3d-pallet-root">Loading.</div>
 <script src="<?php echo URL_3D_PALLET_DIR_JS; ?>main.js" ></script>
 <script>
-
+    const autoScaleLoading = document.querySelector('#auto-scale-loading');
     const products = [];
 
     <?php
@@ -117,6 +118,7 @@ $order = wc_get_order( $wpPost->ID );
 
 
     var isRunTime = false;
+    var isBackSize = false;
     var intervalId = 0;
     const results = [];
     var lastSend = '';
@@ -134,6 +136,7 @@ $order = wc_get_order( $wpPost->ID );
     var minWidth = 0;
     function autoScaleDrawData() {
         clearInterval(intervalId);
+        autoScaleLoading.style.display = 'block';
         console.info('Auto scale start.')
         diffWidth = 0;
         sendWidth = 0;
@@ -144,6 +147,7 @@ $order = wc_get_order( $wpPost->ID );
         minWidth = 0;
         packedBoxes = 0;
         step = 1;
+        isBackSize = false;
 
 
         let depth = parseInt(document.querySelector('#depth').value)||100;
@@ -180,67 +184,90 @@ $order = wc_get_order( $wpPost->ID );
 
 
                 const packed = parseInt(result[4].split(': ')[1]);
-                const total = parseInt(result[5].split(': ')[1]);
                 if (step===1) {
-                    if (packedBoxes <= packed) {
+                    if (!isBackSize&&packedBoxes <= packed) {
+                        console.info('Step:', step)
                         packedBoxes = packed;
                         diffWidth += Math.ceil(sendWidth / 2);
                         diffDepth += Math.ceil(sendDepth / 2);
                         results.push(resultData)
-                        applyResult(result);
                     } else {
-                        console.info('next step')
-                        step++;
-                        diffWidth -= Math.ceil(diffWidth / 2);
-                        diffDepth -= Math.ceil(diffDepth / 2);
+                        isBackSize = true;
+                        if (packedBoxes > packed) {
+                            console.info('Step backspace size:', step)
+                            diffWidth -= Math.ceil(diffWidth / 2);
+                            diffDepth -= Math.ceil(diffDepth / 2);
+                        }else {
+                            packedBoxes = packed;
+                            results.push(resultData)
+                            console.info('Next step')
+                            step++;
+                        }
                     }
+                    applyResult(result);
                 }else {
                     if (step===2) {
-                        console.info('step 2')
+                        console.info('Step:', step)
                         if (packedBoxes <= packed) {
                             diffWidth++;
                             diffDepth++;
                             results.push(resultData)
-                            applyResult(result);
                         } else {
-                            console.info('next step')
+                            console.info('Next step')
                             step++;
                             diffWidth--;
                             diffDepth--;
                         }
+                        applyResult(result);
                     }else {
                         if (step===3) {
-                            console.info('step 3')
+                            console.info('Step:', step)
                             if (packedBoxes <= packed) {
                                 diffDepth++;
                                 results.push(resultData)
-                                applyResult(result);
                             }else {
-                                console.info('next step')
+                                console.info('Next step')
                                 step++;
                                 diffDepth--;
                             }
+                            applyResult(result);
                         }else {
                             if (step===4) {
-                                console.info('step 4')
+                                console.info('Step:', step)
                                 if (packedBoxes <= packed) {
-                                    diffHeight+= 5;
+                                    diffWidth++;
                                     results.push(resultData)
-                                    applyResult(result);
-                                } else {
+                                }else {
+                                    console.info('Next step')
                                     step++;
-                                    diffHeight-=5;
+                                    diffWidth--;
                                 }
+                                applyResult(result);
                             }else {
-                                console.info('step 5')
-                                if (packedBoxes <= packed) {
-                                    diffHeight++;
-                                    results.push(resultData)
+                                if (step===5) {
+                                    console.info('Step:', step)
+                                    if (packedBoxes <= packed) {
+                                        diffHeight+= 5;
+                                        results.push(resultData)
+                                    } else {
+                                        console.info('Next step')
+                                        step++;
+                                        diffHeight-=5;
+                                    }
                                     applyResult(result);
-                                } else {
-                                    step++;
-                                    diffHeight--;
-                                    autoScaleResult()
+                                }else {
+                                    if (packedBoxes <= packed) {
+                                        console.info('Step:', step)
+                                        diffHeight++;
+                                        results.push(resultData)
+                                        applyResult(result);
+                                    } else {
+                                        console.info('Next step')
+                                        step++;
+                                        diffHeight--;
+                                        applyResult(result);
+                                        autoScaleResult()
+                                    }
                                 }
                             }
                         }
@@ -263,12 +290,15 @@ $order = wc_get_order( $wpPost->ID );
 
     function autoScaleResult() {
         clearInterval(intervalId);
+        autoScaleLoading.style.display = 'none';
         if (results.length) {
             window.lotus.c(window.lotus.Jb(window.lotus.vn.F(results[results.length - 1].lastSend)));
             applyResult(results[results.length - 1].result);
         }
-        console.info('Last Send', results[results.length - 1].lastSend)
-        console.info('Result:', results)
+        console.info('Last Send:\n', results[results.length - 1].lastSend)
+        console.info('Result:')
+        console.dir(results)
+        console.info('Auto scale end.')
     }
 
 </script>
