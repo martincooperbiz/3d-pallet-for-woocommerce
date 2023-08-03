@@ -3,7 +3,7 @@
 Plugin Name: 3D pallet for WooCommerce
 Plugin URI: https://github.com/levcoder/3d-pallet-for-woocommerce
 Description: 3D pallet for WooCommerce.
-Version: 0.1.2
+Version: 0.1.3
 Author: Dima Levischenko
 Author URI: https://github.com/levcoder
 You can contact us at dimaleschenko@gmail.com
