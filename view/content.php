@@ -44,15 +44,37 @@ $order = wc_get_order( $wpPost->ID );
     $productInfos = [];
     foreach ($order->get_items() as $item_id => $item) {
         $order_item_data = $item->get_data(); // Get WooCommerce order item meta data in an unprotected array
+        if (strpos(strtolower($order_item_data['name']),'kickboards') !== false) {
+            continue;
+        }
+
+        $multiBoxes = [];
         if ((int)$order_item_data['variation_id']) {
+            $multiBoxes = IgniteWoo_MultiBox_Products::get_box_meta_data($order_item_data['variation_id']);
             $product_object = wc_get_product($order_item_data['variation_id']);
-            $productInfos[] = [
-                'name' => $order_item_data['name'],
-                'w' => $product_object->get_width(),
-                'd' => $product_object->get_length(),
-                'h' => $product_object->get_height(),
-                'q' => $order_item_data['quantity']
-            ];
+            if (empty($multiBoxes)) {
+                $productInfos[] = [
+                    'name' => $order_item_data['name'],
+                    'w' => $product_object->get_width(),
+                    'd' => $product_object->get_length(),
+                    'h' => $product_object->get_height(),
+                    'q' => $order_item_data['quantity']
+                ];
+            }
+        }else{
+            $multiBoxes = IgniteWoo_MultiBox_Products::get_box_meta_data($order_item_data['product_id']);
+        }
+
+        if (!empty($multiBoxes)) {
+            foreach ($multiBoxes as $box) {
+                $productInfos[] = [
+                    'name' => $order_item_data['name'],
+                    'w' => $box['width'],
+                    'd' => $box['length'],
+                    'h' => $box['height'],
+                    'q' => 1
+                ];
+            }
         }
     }
 
