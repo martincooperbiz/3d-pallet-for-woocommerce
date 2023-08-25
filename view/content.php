@@ -35,7 +35,7 @@ $order = wc_get_order( $wpPost->ID );
 </div>
 <div id="auto-scale-loading" style='display:none;background-image: url("/wp-includes/js/thickbox/loadingAnimation.gif");height: 26px;background-repeat: no-repeat;background-position: center;' ></div>
 <div id="visualize-3d-pallet-root">Loading.</div>
-<script src="<?php echo URL_3D_PALLET_DIR_JS; ?>main.js" ></script>
+<script src="<?php echo URL_3D_PALLET_DIR_JS; ?>main.js?ver=<?php echo WOO_3D_PALLET_VERSION; ?>" ></script>
 <script>
     const autoScaleLoading = document.querySelector('#auto-scale-loading');
     const products = [];
@@ -48,27 +48,29 @@ $order = wc_get_order( $wpPost->ID );
             continue;
         }
 
-        $multiBoxes = [];
+        /** @var WC_Product $_product */
         if ((int)$order_item_data['variation_id']) {
-            $multiBoxes = IgniteWoo_MultiBox_Products::get_box_meta_data($order_item_data['variation_id']);
-            $product_object = wc_get_product($order_item_data['variation_id']);
-            if (empty($multiBoxes)) {
-                $productInfos[] = [
-                    'name' => $order_item_data['name'],
-                    'w' => $product_object->get_width(),
-                    'd' => $product_object->get_length(),
-                    'h' => $product_object->get_height(),
-                    'q' => $order_item_data['quantity']
-                ];
-            }
+            $_product = wc_get_product($order_item_data['variation_id']);
         }else{
-            $multiBoxes = IgniteWoo_MultiBox_Products::get_box_meta_data($order_item_data['product_id']);
+            $_product = wc_get_product($order_item_data['product_id']);
         }
 
+        if (!$_product->needs_shipping() || !$_product->has_dimensions()) {
+            continue;
+        }
+
+        $productInfos[] = [
+            'name' => $order_item_data['name'],
+            'w' => wc_get_dimension($_product->get_width(), 'cm'),
+            'd' => wc_get_dimension($_product->get_length(), 'cm'),
+            'h' => wc_get_dimension($_product->get_height(), 'cm'),
+            'q' => 1
+        ];
+        $multiBoxes = IgniteWoo_MultiBox_Products::get_box_meta_data($_product->get_id());
         if (!empty($multiBoxes)) {
             foreach ($multiBoxes as $box) {
                 $productInfos[] = [
-                    'name' => $order_item_data['name'],
+                    'name' => 'Addition box '.$order_item_data['name'],
                     'w' => $box['width'],
                     'd' => $box['length'],
                     'h' => $box['height'],
