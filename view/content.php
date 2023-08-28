@@ -144,7 +144,7 @@ $order = wc_get_order( $wpPost->ID );
     var isRunTime = false;
     var isBackSize = false;
     var intervalId = 0;
-    const results = [];
+    var results = [];
     var lastSend = '';
     var diffWidth = 0;
     var sendWidth = 0;
@@ -162,6 +162,7 @@ $order = wc_get_order( $wpPost->ID );
         clearInterval(intervalId);
         autoScaleLoading.style.display = 'block';
         console.info('Auto scale start.')
+        results = [];
         diffWidth = 0;
         sendWidth = 0;
         diffDepth = 0;
@@ -207,7 +208,7 @@ $order = wc_get_order( $wpPost->ID );
                 };
 
 
-                const packed = parseInt(result[4].split(': ')[1]);
+                const packed = parseInt(result[4].split(': ')[1])||0;
                 if (step===1) {
                     if (!isBackSize&&packedBoxes <= packed) {
                         console.info('Step:', step)
@@ -224,7 +225,7 @@ $order = wc_get_order( $wpPost->ID );
                         }else {
                             packedBoxes = packed;
                             results.push(resultData)
-                            console.info('Next step')
+                            console.info('Next step', step)
                             step++;
                         }
                     }
@@ -236,9 +237,10 @@ $order = wc_get_order( $wpPost->ID );
                             diffWidth++;
                             diffDepth++;
                             results.push(resultData)
+                            applyResult(result);
                         } else {
-                            console.info('Next step')
                             step++;
+                            console.info('Next step', step)
                             diffWidth--;
                             diffDepth--;
                         }
@@ -250,8 +252,8 @@ $order = wc_get_order( $wpPost->ID );
                                 diffDepth++;
                                 results.push(resultData)
                             }else {
-                                console.info('Next step')
                                 step++;
+                                console.info('Next step', step)
                                 diffDepth--;
                             }
                             applyResult(result);
@@ -262,8 +264,8 @@ $order = wc_get_order( $wpPost->ID );
                                     diffWidth++;
                                     results.push(resultData)
                                 }else {
-                                    console.info('Next step')
                                     step++;
+                                    console.info('Next step', step)
                                     diffWidth--;
                                 }
                                 applyResult(result);
@@ -274,8 +276,8 @@ $order = wc_get_order( $wpPost->ID );
                                         diffHeight+= 5;
                                         results.push(resultData)
                                     } else {
-                                        console.info('Next step')
                                         step++;
+                                        console.info('Next step', step)
                                         diffHeight-=5;
                                     }
                                     applyResult(result);
@@ -286,8 +288,8 @@ $order = wc_get_order( $wpPost->ID );
                                         results.push(resultData)
                                         applyResult(result);
                                     } else {
-                                        console.info('Next step')
                                         step++;
+                                        console.info('Next step', step)
                                         diffHeight--;
                                         applyResult(result);
                                         autoScaleResult()
