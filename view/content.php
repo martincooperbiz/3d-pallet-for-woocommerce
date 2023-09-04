@@ -137,7 +137,7 @@ $order = wc_get_order( $wpPost->ID );
     }
 
     document.addEventListener('DOMContentLoaded', function (){
-        drawData();
+        autoScaleDrawData();
     });
 
 
