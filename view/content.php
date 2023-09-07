@@ -96,6 +96,10 @@ $order = wc_get_order( $wpPost->ID );
         products.forEach((product, i)=>{
             data += `\n${i}. ${product.d}, ${product.h}, ${product.w}, ${product.q}`;
         });
+        if (!products.length) {
+            return;
+        }
+
         window.lotus.c(window.lotus.Jb(window.lotus.vn.F(data)))
         delay(500).then(()=>{
             console.info('data:', data)
@@ -187,6 +191,10 @@ $order = wc_get_order( $wpPost->ID );
                 minWidth = product.w;
             }
         });
+
+        if (!products.length) {
+            return;
+        }
 
         intervalId = setInterval(() => {
 

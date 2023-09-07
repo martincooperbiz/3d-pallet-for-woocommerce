@@ -21,7 +21,7 @@ if ( ! in_array( '3d-pallet-for-woocommerce/3d-pallet-for-woocommerce.php', appl
     return;
 }
 
-define('WOO_3D_PALLET_VERSION', '0.1.8');
+define('WOO_3D_PALLET_VERSION', '0.1.9');
 define('PATH_3D_PALLET_DIR_VIEW', plugin_dir_path(__FILE__).'view/');
 define('URL_3D_PALLET_DIR_CSS', plugin_dir_url(__FILE__).'assets/css/');
 define('URL_3D_PALLET_DIR_JS', plugin_dir_url(__FILE__).'assets/js/');
