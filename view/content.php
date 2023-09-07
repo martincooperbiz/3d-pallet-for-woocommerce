@@ -108,6 +108,7 @@ $order = wc_get_order( $wpPost->ID );
     }
 
     function applyResult(result) {
+        clearInterval(intervalId);
         const elInfoBlock = document.querySelector('#result-row');
         elInfoBlock.innerHTML = '';
         result.forEach((item, idx)=>{
